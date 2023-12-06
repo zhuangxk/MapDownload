@@ -20,18 +20,15 @@
 
     <div id="container"></div> 
     <script>
-            var dd = [{
-                "featureType": "all",
+            var json = [{
+                "featureType": "water",
                 "elementType": "geometry",
                 "stylers": {
-                    "hue": "#007fff",
-                    "saturation": 89
-                }
-            }, {
-                "featureType": "water",
-                "elementType": "all",
-                "stylers": {
-                    "color": "#ffffff"
+                    "hue": "#05296B",
+                    "color": "#05296B",
+                    visibility: 'on',
+                    lightness: -10,
+                    saturation: 300,
                 }
             }];
         // var map = new BMap.Map("container");
@@ -43,7 +40,8 @@
         //     });
         var map = new BMap.Map("container");
         var point = new BMap.Point(120.404, 36.7);
-        map.centerAndZoom(point, 8);  
+        map.centerAndZoom(point, 8); 
+
 
         // fetch('./custom_map_config.json')
         // .then((response) => response.json())
@@ -51,9 +49,9 @@
         //     console.log(json)
 
 
-        //     map.setMapStyle({
-        //             styleJson: json
-        //     });
+            map.setMapStyle({
+                    styleJson: json
+            });
 
 
         // });

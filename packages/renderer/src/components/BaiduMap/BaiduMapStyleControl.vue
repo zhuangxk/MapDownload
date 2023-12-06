@@ -81,8 +81,8 @@
             <n-slider
               v-model:value="formValue.stylers.saturation"
               :step="1"
-              :max="100"
-              :min="-100"
+              :max="1000"
+              :min="-1000"
             />
           </n-form-item>
           <n-form-item
@@ -94,17 +94,6 @@
               :max="8"
             />
           </n-form-item>
-          <n-form-item
-            label="字号"
-          >
-            <n-slider
-              v-model:value="formValue.stylers.fontsize"
-              :step="1"
-              :max="72"
-              :min="8"
-            />
-          </n-form-item>
-
           <n-form-item>
             <n-button
               attr-type="button"
@@ -204,9 +193,7 @@ export default defineComponent({
         hue: '',
         lightness: 1,
         saturation: 1,
-        weight: 1,
-        fontsize: 14,
-        // level: [4,18],
+        weight: '',
       },
     });
     return {
@@ -229,20 +216,6 @@ export default defineComponent({
         }
         styleList.value.push(cloneDeep(formValue.value));
         emit('preview', styleList.value);
-        formValue.value = {
-          featureType: '',
-          elementType: '',
-          stylers: {
-            visibility: 'on',
-            color: '',
-            hue: '',
-            lightness: 1,
-            saturation: 1,
-            weight: 1,
-            fontsize: 14,
-            // level: [4,18],
-          },
-        };
       },
       handleDel(index){
         if (index > -1 && index < styleList.value.length) {

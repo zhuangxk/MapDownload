@@ -44,3 +44,51 @@ export const elementTypeOptions = [
     { label: '标注-文本线粗' , value: 'labels.text.stroke'},
     { label: '标注-图标' , value: 'labels.icon'},
 ];
+
+
+
+
+
+// 生成压缩style样式字符串
+export function generateStyle(style){
+    let res = '';
+    for( const feature of style){
+        const f_list = [];
+        for(const key in feature){
+            if(typeof feature[key] == 'object'){
+                for (const inner_key in feature[key]){
+                    f_list.push(processLabel(inner_key) + ':' + feature[key][inner_key]);
+                }
+            } else {
+                f_list.push(processLabel(key) + ':' + processLabel(feature[key]));
+            }
+        }
+        res = res + f_list.join('|') + ',';
+    }
+    return encodeURIComponent(res);
+}
+
+// 压缩规则
+function processLabel(name){
+    const map = {
+        all:'all',
+        geometry:'g',
+        'geometry.fill':'g.f',
+        'geometry.stroke':'g.s',
+        labels:'l',
+        'labels.text.fill':'l.t.f',
+        'labels.text.stroke':'l.t.s',
+        'lables.text':'l.t',
+        'labels.icon':'l.i',
+        featureType:'t',
+        elementType:'e',
+        visibility:'v',
+        color:'c',
+        lightness:'l',
+        saturation:'s',
+        weight:'w',
+        zoom:'z',
+        hue:'h',
+    };
+    return map[name] ?? name;
+}

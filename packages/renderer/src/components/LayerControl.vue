@@ -46,13 +46,10 @@ export default defineComponent({
       handleSelect (key, layer) {
         const parent = layerList.find(item => { return item.uuid === layer.pid; });
 
-        const {mapboxKey, tdtKey} = getKeys();
-        if ((parent.value === 'Mapbox' && !mapboxKey) || (parent.value === 'Tdt' && !tdtKey)) {
+        const {mapboxKey, tdtKey, baiduKey} = getKeys();
+        if ((parent.value === 'Mapbox' && !mapboxKey) || (parent.value === 'Tdt' && !tdtKey) || (parent.value === 'Baidu' && layer.value === 'custom' && !baiduKey)) {
           window.$message.warning(`请设置${parent.label}地图Key`);
         }
-        // if ((parent.value === 'Baidu' && layer.value === 'custom' && !mapboxKey)) {
-        //   window.$message.warning(`请设置${parent.label}地图Key`);
-        // }
         emit('choose', { parent: parent.value, layer: layer });
 
         showDropdownRef.value = false;

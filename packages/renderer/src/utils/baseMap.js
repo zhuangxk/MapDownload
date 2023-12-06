@@ -8,6 +8,8 @@ import booleanContains from '@turf/boolean-contains';
 // import booleanDisjoint from '@turf/boolean-disjoint';
 import intersect from '@turf/intersect';
 import * as turf from '@turf/helpers';
+import { getKeys } from './mapKey';
+import { generateStyle } from './baiduStyle';
 
 const defaultTileOption = {
   maxCacheSize: 1000,
@@ -69,11 +71,29 @@ export default class baseMap{
 
     // testDraw(this.map.getBaseLayer(), {x:24,y:12,z:5}); // 测试-绘制瓦片外框
   }
-  setBaiduStyle(style){
+  setBaiduStyle(style = {}){
+    const { baiduKey } = getKeys();
+    const baseURL = 'http://mapapip2.bdimg.com/customimage/tile?qt=customimage&x={x}&y={y}&z={z}&udt=20231115&scale=1&ak='+ baiduKey +'&styles=';
     const oldBaseLayer = this.map.getBaseLayer();
-    const options = oldBaseLayer.options;
-    console.log(1111, options, style);
-    oldBaseLayer.setOptions(options);
+    const urlTemplate = baseURL + generateStyle(style);
+    const baseLayer = new maptalks.TileLayer('base', {
+      style: 'custom',
+      ...defaultTileOption,
+      // subdomains: param.layer.subdomains,
+      // attribution: param.layer.attribution,
+      subdomains: [0, 1, 2, 3],
+      attribution: '百度-自定义',
+      urlTemplate,
+    
+    });
+    if (oldBaseLayer && oldBaseLayer.config()?.debug) {
+      baseLayer.config({debug: true});
+    }
+    this.map.removeBaseLayer(oldBaseLayer);
+    this.map.setBaseLayer(baseLayer);
+    this.map.setSpatialReference({
+      projection : 'baidu',
+    });
   }
   // 绘制矩形、编辑矩形位置
   startDraw() {

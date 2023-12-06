@@ -88,6 +88,7 @@ export default defineComponent({
       const data = getKeys();
       this.tdtKey = data?.tdtKey;
       this.mapboxKey = data?.mapboxKey;
+      this.baiduKey = data?.baiduKey;
     },
     cancel() {
       // eslint-disable-next-line
