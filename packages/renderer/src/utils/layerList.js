@@ -37,6 +37,15 @@ const mapList = [
     value: 'Baidu',
     children: [
       {
+        label: '自定义',
+        value: 'custom',
+        prejection: 'baidu',
+        exteral: {
+          subdomains: [0, 1, 2, 3],
+          attribution: '百度-自定义',
+        },
+      },
+      {
         label: '电子地图',
         value: 'Normal',
         prejection: 'baidu',
@@ -147,6 +156,15 @@ const mapList = [
       {
         label: '强边界',
         value: 'hardedge',
+        prejection: 'baidu',
+        exteral: {
+          subdomains: BaiduConstomSubdomains,
+          attribution: '百度-自定义-强边界',
+        },
+      },
+      {
+        label: '自定义',
+        value: 'customer',
         prejection: 'baidu',
         exteral: {
           subdomains: BaiduConstomSubdomains,

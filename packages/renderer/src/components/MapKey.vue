@@ -27,6 +27,14 @@
           type="text"
         >
       </div>
+      <div class="item">
+        <span class="label">百度AK：  </span>
+        <input
+          v-model="baiduKey"
+          class="value"
+          type="text"
+        >
+      </div>
     </div>
     <template #action>
       <n-button @click="cancel">
@@ -61,6 +69,7 @@ export default defineComponent({
       showModal: false,
       tdtKey: '',
       mapboxKey: '',
+      baiduKey: '',
     };
   },
   watch: {
@@ -88,6 +97,7 @@ export default defineComponent({
       setKeys({
         tdtKey: this.tdtKey || '',
         mapboxKey: this.mapboxKey || '',
+        baiduKey: this.baiduKey || '',
       });
       this.cancel();
     },

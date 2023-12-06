@@ -42,11 +42,11 @@ function updateProgress() {
   errorDom.innerText = statistics.error;
 }
 
-export function progressAddSuccess() {
-  statistics.success++;
+export function progressAddSuccess(count = 1) {
+  statistics.success = statistics.success + count;
   updateProgress();
 }
-export function progressAddError() {
-  statistics.error++;
+export function progressAddError(count = 1) {
+  statistics.error = statistics.error + count;
   updateProgress();
 }

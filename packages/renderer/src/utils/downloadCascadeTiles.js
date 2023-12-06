@@ -248,10 +248,11 @@ maptalks.TileLayer.prototype.downloadTiles = async function(tileZoom, containerE
                 this._splitTiles(frustumMatrix, tiles, renderer, idx, z + 1, tileExtent, dx, dy, tileOffsets, parentRenderer);
                 extent._combine(tileExtent);
                 const rrr = await downloadImage(tiles[0], downloadOption);
-                if (rrr) {
-                  progressAddSuccess();
-                } else {
-                  progressAddError();
+                if (rrr?.success) {
+                  progressAddSuccess(rrr.success);
+                } 
+                if (rrr?.error) {
+                  progressAddError(rrr.error);
                 }
               } else {
                   if (!tileInfo) {
@@ -277,10 +278,11 @@ maptalks.TileLayer.prototype.downloadTiles = async function(tileZoom, containerE
                   }
 
                   const rrr = await downloadImage(tileInfo, downloadOption);
-                  if (rrr) {
-                    progressAddSuccess();
-                  } else {
-                    progressAddError();
+                  if (rrr?.success) {
+                    progressAddSuccess(rrr.success);
+                  } 
+                  if (rrr?.error) {
+                    progressAddError(rrr.error);
                   }
                   extent._combine(tileExtent);
               }

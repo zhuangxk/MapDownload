@@ -75,6 +75,15 @@
         </div>
       </div>
       <div class="item">
+        <span class="label">补漏；</span>
+        <div class="value">
+          <input
+            v-model="patch"
+            type="checkbox"
+          >
+        </div>
+      </div>
+      <div class="item">
         <span class="label">下载路径：</span>
         <div class="value">
           <input
@@ -153,6 +162,7 @@ export default defineComponent({
       minZoom: '5',
       mergeLayers: false,
       clipImage: false,
+      patch: true,
       imageType: 'png',
       imageTypeList: [
         {
@@ -230,6 +240,7 @@ export default defineComponent({
         extent: this.downloadExtent,
         clipImage: this.clipImage,
         imageType: this.imageType,
+        patch: this.patch,
       };
       // eslint-disable-next-line
       this.$emit('ok', param);

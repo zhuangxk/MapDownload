@@ -16,6 +16,7 @@ ipcMain.on('ensure-dir', (event, args) => {
   fse.ensureDirSync(args);
 });
 
+let iii=0;
 
 // 下载事件
 export function ipcHandle(win) {
@@ -39,11 +40,24 @@ export function ipcHandle(win) {
 
 
   // superagent & sharp 下载图片
-  ipcMain.on('save-image', (event, args) => {
+  ipcMain.on('save-image', async (event, args) => {
+    iii++;
+    try {
     // sharp(base64Data).composite 反过来试试
     const sharpStream = sharp({
       failOnError: false,
     });
+    if(args.patch){
+      const exists = await fse.pathExists(args.savePath); 
+      console.log('文件存在：' + args.savePath );
+      if(exists){
+        win.webContents.send('imageDownloadDone', {
+          state: 'completed',
+          file: args.savePath,
+        });
+       return;
+      }    
+    }
     const promises = [];
     if (args.imageBuffer) {
       const base64Data = args.imageBuffer.replace(/^data:image\/\w+;base64,/, '');
@@ -65,8 +79,10 @@ export function ipcHandle(win) {
     requestHandle(request.get(args.url)).pipe(sharpStream);
     Promise.all(promises)
       .then(() => {
+        console.log('下载完成:'+ iii + '__'+ args.savePath);
         win.webContents.send('imageDownloadDone', {
           state: 'completed',
+          file: args.savePath,
         });
       })
       .catch(() => {
@@ -75,11 +91,19 @@ export function ipcHandle(win) {
           fs.unlinkSync(args.savePath);
         } catch (e) {
           console.error(e);
+         
         }
         win.webContents.send('imageDownloadDone', {
           state: 'error',
+          file: args.savePath,
         });
       });
+    } catch (error) {
+      win.webContents.send('imageDownloadDone', {
+        state: 'error',
+        file: args.savePath,
+      });
+    }
   });
 
   // superagent & sharp 下载、合并图片

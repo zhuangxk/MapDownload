@@ -9,7 +9,17 @@
     <layer-control
       @choose="chooseLayers"
     />
+    <div
+      v-if="isBaiduCustom"
+      class="splitline"
+    />
+    <BaiduMapStyleControl
+      v-if="isBaiduCustom"
+      @preview="handlePreview"
+    />
+
     <div class="splitline" />
+
     <n-icon
       size="20"
       title="绘制矩形"
@@ -72,6 +82,7 @@
       @hide="showSet(false)"
     />
   </div>
+
   <ProgressControl />
   <tips />
 </template>
@@ -90,6 +101,7 @@ import Tips from './Tips.vue';
 import {useMessage, useNotification} from 'naive-ui';
 import GridIcon from './GridIcon.vue';
 import ProgressControl from './ProgressControl.vue';
+import BaiduMapStyleControl from './BaiduMap/BaiduMapStyleControl.vue';
 import { CloudDownloadOutline, HelpCircleOutline, SettingsOutline, SquareOutline } from '@vicons/ionicons5';
 // eslint-disable-next-line
 let map
@@ -108,6 +120,7 @@ export default defineComponent({
     HelpCircleOutline,
     SettingsOutline,
     SquareOutline,
+    BaiduMapStyleControl,
   },
   setup() {
     window.$message = useMessage();
@@ -128,6 +141,8 @@ export default defineComponent({
       limitMinZoom: 1,
       limitMaxZoom: 18,
       isBaidu: false,
+      isBaiduCustom: false,
+      layerData: null,
     };
   },
   computed: {
@@ -138,8 +153,14 @@ export default defineComponent({
   },
   methods: {
     chooseLayers(data) {
+      this.layerData = data;
+      this.isBaiduCustom = data.layer.value == 'custom';
       this._currentLayer = data;
       map.switchBaseLayer(data);
+    },
+    handlePreview(style){
+      map.setBaiduStyle(style);
+      console.log(this.layerData);
     },
     drawRect() {
       this.isDrawing = !this.isDrawing;

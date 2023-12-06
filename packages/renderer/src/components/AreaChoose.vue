@@ -54,6 +54,7 @@ export default defineComponent({
         chooseArea.value = option.areaName;
         popover.value.setShow(false);
         option.fetchLoad().then(geojson => {
+          console.log(option , geojson);
           emit('choose', {option, geojson});
         });
       },

@@ -50,6 +50,9 @@ export default defineComponent({
         if ((parent.value === 'Mapbox' && !mapboxKey) || (parent.value === 'Tdt' && !tdtKey)) {
           window.$message.warning(`请设置${parent.label}地图Key`);
         }
+        // if ((parent.value === 'Baidu' && layer.value === 'custom' && !mapboxKey)) {
+        //   window.$message.warning(`请设置${parent.label}地图Key`);
+        // }
         emit('choose', { parent: parent.value, layer: layer });
 
         showDropdownRef.value = false;

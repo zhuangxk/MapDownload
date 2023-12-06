@@ -3,6 +3,7 @@ import { setState, setProgress } from './progress';
 // eslint-disable-next-line
 import { judgeTile, testDraw2 } from './baseMap';
 import { ClipImage } from './clipImage';
+// import { cloneDeep } from 'lodash';
 const CLIPIMAGE = new ClipImage();
 /**
  * 下载瓦片
@@ -120,14 +121,42 @@ export function downloadClipLoop (list, apiDownload, tileLayer, downloadGeometry
  * @param {*} downloadOption 下载参数
  * @returns Promise
  */
-export function downloadImage (tile, downloadOption) {
+
+let list = [];
+
+export function awaitDownLoad(){
+  const result = [];
+  return new Promise((resolve) => {
+    window.electron.imageDownloadDone(state => {
+      result.push(state);
+      console.log(result.length, list.length);
+      if(result.length >= list.length){
+        list = [];
+        resolve({
+          success: result.filter(i=>i.state=='completed').length,
+          error: result.filter(i=>i.state=='error').length,
+        });
+      }
+    });
+
+  });
+}
+
+export async function downloadImage (tile, downloadOption) {
   const { clipImage } = downloadOption;
-  if (clipImage) {
-    return _downloadClipImage(tile, downloadOption);
+  const downloadMethod = clipImage ? _downloadClipImage : _downloadImage;
+  if( list.length < 1000 ){
+    list.push(downloadMethod(tile, downloadOption));
+    return;
   } else {
-    return _downloadImage(tile, downloadOption);
+    Promise.race(list);
+    const res =  await awaitDownLoad();
+    list.push(downloadMethod(tile, downloadOption));
+    return res;
   }
 }
+
+
 
 /**
  * 下载单张瓦片
@@ -135,22 +164,16 @@ export function downloadImage (tile, downloadOption) {
  * @param {*} downloadOption
  * @returns
  */
+
+
 function _downloadImage (tile, downloadOption) {
   return new Promise((resolve) => {
-
-    const temppath = downloadOption.downloadPath + tile.z + '\\' + tile.x;
+    const temppath = downloadOption.downloadPath + tile.z + '/' + tile.x;
     window.electron.ipcRenderer.send('ensure-dir', temppath);
-    const savePath = temppath + '\\' + tile.y + downloadOption.pictureType;
-    const param = {zoom: tile.z, url:tile.url, savePath, x:tile.x, y:tile.y};
-
+    const savePath = temppath + '/' + tile.y + downloadOption.pictureType;
+    const param = {zoom: tile.z, url:tile.url, savePath, x:tile.x, y:tile.y, patch: downloadOption.patch};
     window.electron.ipcRenderer.send('save-image', param);
-    window.electron.imageDownloadDone(state => {
-      if (state.state === 'completed') {
-        resolve(true);
-      } else {
-        resolve(false);
-      }
-    });
+    resolve(true);
   });
 }
 
@@ -171,10 +194,10 @@ function _downloadClipImage (tile, downloadOption) {
     const code = prj.code;
 
     const apiDownload = (temp, imageBuffer) => {
-      const temppath = downloadPath + temp.z + '\\' + temp.x;
+      const temppath = downloadPath + temp.z + '/' + temp.x;
       window.electron.ipcRenderer.send('ensure-dir', temppath);
-      const savePath = temppath + '\\' + temp.y + pictureType;
-      const param = {zoom: temp.z, url:temp.url, savePath, x:temp.x, y:temp.y, imageBuffer};
+      const savePath = temppath + '/' + temp.y + pictureType;
+      const param = {zoom: temp.z, url:temp.url, savePath, x:temp.x, y:temp.y, imageBuffer, patch: downloadOption.patch};
       window.electron.ipcRenderer.send('save-image', param);
     };
 
@@ -201,13 +224,6 @@ function _downloadClipImage (tile, downloadOption) {
         apiDownload(item, imageBuffer);
       });
     }
-
-    window.electron.imageDownloadDone(state => {
-      if (state.state === 'completed') {
-        resolve(true);
-      } else {
-        resolve(false);
-      }
-    });
+    resolve(true);
   });
 }

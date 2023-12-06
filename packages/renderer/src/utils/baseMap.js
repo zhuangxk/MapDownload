@@ -69,6 +69,12 @@ export default class baseMap{
 
     // testDraw(this.map.getBaseLayer(), {x:24,y:12,z:5}); // 测试-绘制瓦片外框
   }
+  setBaiduStyle(style){
+    const oldBaseLayer = this.map.getBaseLayer();
+    const options = oldBaseLayer.options;
+    console.log(1111, options, style);
+    oldBaseLayer.setOptions(options);
+  }
   // 绘制矩形、编辑矩形位置
   startDraw() {
     const map = this.map;
