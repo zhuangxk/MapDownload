@@ -2,8 +2,7 @@
 import { setState, setProgress } from './progress';
 import { downloadLoop, downloadClipLoop } from './download';
 import {setMapLoading} from './baseMap.js';
-import path from 'path';
-
+import path from 'path-browserify';
 /**
  * 下载TMS瓦片
  */

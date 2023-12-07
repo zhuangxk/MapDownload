@@ -267,11 +267,11 @@ export default defineComponent({
   }
 }
 .descriptions{
-  ::v-deep .n-descriptions-header{
+  :deep(.n-descriptions-header){
     font-size: 14px;
     margin-bottom: 3px;
   }
-  ::v-deep .n-descriptions-table-content__label{
+  :deep(.n-descriptions-table-content__label){
     display: inline-block;
     width: 80px;
     text-align: right;
