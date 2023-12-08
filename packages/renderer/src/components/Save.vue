@@ -65,7 +65,7 @@
           下载大量瓦片时，合并可能会造成卡死！
         </div>
       </div>
-      <div class="item">
+      <!-- <div class="item">
         <span class="label">边界裁切：</span>
         <div class="value">
           <input
@@ -73,7 +73,7 @@
             type="checkbox"
           >
         </div>
-      </div>
+      </div> -->
       <div class="item">
         <span class="label">补漏；</span>
         <div class="value">

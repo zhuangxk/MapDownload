@@ -37,8 +37,8 @@ export function showProgress(visible) {
 }
 function updateProgress() {
   progressDom.value = statistics.percentage;
-  // successDom.innerText = `${statistics.success}/${statistics.count}`;
-  successDom.innerText = `${statistics.success}`;
+  successDom.innerText = `${statistics.success}/${statistics.count}`;
+  // successDom.innerText = `${statistics.success}`;
   errorDom.innerText = statistics.error;
 }
 

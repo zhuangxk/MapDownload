@@ -1,4 +1,7 @@
 import * as maptalks from 'maptalks';
+import { downloadImage } from './download';
+import { setProgress } from './progress';
+
 const isNil = maptalks.Util.isNil;
 const PointExtent = maptalks.PointExtent;
 const Point = maptalks.Point;
@@ -39,11 +42,13 @@ const TEMP_POINT1 = new Point(0, 0);
 const TEMP_POINT2 = new Point(0, 0);
 const TEMP_POINT3 = new Point(0, 0);
 
-import { downloadImage } from './download';
-import { progressAddSuccess, progressAddError } from './progress';
-
+// import { progressAddSuccess, progressAddError } from './progress';
+let total = 0;
 // 下载瓦片
 maptalks.TileLayer.prototype.downloadCascadeTiles = async function(z, downloadOption) {
+  total = 0;
+  window.electron.ipcRenderer.send('ensure-dir');
+
   const map = this.getMap();
   const pitch = map.getPitch();
   const parentRenderer = undefined;
@@ -171,6 +176,15 @@ maptalks.TileLayer.prototype.downloadTiles = async function(tileZoom, containerE
       bottom = Math.ceil(Math.abs(centerTile.idy - rbTile.idy)),
       right = Math.ceil(Math.abs(centerTile.idx - rbTile.idx));
   const allCount = (top + bottom + 1) * (left + right + 1);
+  total += allCount;
+  window.electron.downloadProgress(state => {
+    setProgress({
+        success: state.successCount, 
+        error: state.errorCount, 
+        percentage: total && ( state.successCount+ state.errorCount) / total * 100, 
+        count: total, 
+    });
+  });
   const tileSize = this.getTileSize();
   const renderer = this.getRenderer() || parentRenderer,
       scale = this._getTileConfig().tileSystem.scale;
@@ -247,13 +261,13 @@ maptalks.TileLayer.prototype.downloadTiles = async function(tileZoom, containerE
                 const tiles = [];
                 this._splitTiles(frustumMatrix, tiles, renderer, idx, z + 1, tileExtent, dx, dy, tileOffsets, parentRenderer);
                 extent._combine(tileExtent);
-                const rrr = await downloadImage(tiles[0], downloadOption);
-                if (rrr?.success) {
-                  progressAddSuccess(rrr.success);
-                } 
-                if (rrr?.error) {
-                  progressAddError(rrr.error);
-                }
+                await downloadImage(tiles[0], downloadOption);
+                // if (rrr?.success) {
+                //   progressAddSuccess(rrr.success);
+                // } 
+                // if (rrr?.error) {
+                //   progressAddError(rrr.error);
+                // }
               } else {
                   if (!tileInfo) {
                       tileInfo = {
@@ -277,13 +291,13 @@ maptalks.TileLayer.prototype.downloadTiles = async function(tileZoom, containerE
                       tileInfo.offset[1] = offset[1];
                   }
 
-                  const rrr = await downloadImage(tileInfo, downloadOption);
-                  if (rrr?.success) {
-                    progressAddSuccess(rrr.success);
-                  } 
-                  if (rrr?.error) {
-                    progressAddError(rrr.error);
-                  }
+                  await downloadImage(tileInfo, downloadOption);
+                //   if (rrr?.success) {
+                //     progressAddSuccess(rrr.success);
+                //   } 
+                //   if (rrr?.error) {
+                //     progressAddError(rrr.error);
+                //   }
                   extent._combine(tileExtent);
               }
               if (leftVisitEnd === -Infinity) {

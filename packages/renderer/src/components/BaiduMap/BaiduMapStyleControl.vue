@@ -9,7 +9,7 @@
         class="btn"
         title="样式配置"
       >
-        样式配置
+        样式配置 
       </span>
     </template>
     <div class="style-box">
@@ -90,7 +90,7 @@
           >
             <n-slider
               v-model:value="formValue.stylers.weight"
-              :step="1"
+              :step="0.1"
               :max="8"
             />
           </n-form-item>
@@ -117,10 +117,18 @@
           <span
             class="btn"
             title="样式配置"
+            @click="styleVisible = true"
           >
             加载配置
           </span>
         </div>
+        <n-input
+          v-if="styleVisible"
+          v-model:value="textareaValue"
+          type="textarea"
+          placeholder="输入JSON后回车"
+          @keypress.enter="loadStyle"
+        />
         <div class="list-box">
           <div
             v-for="(item, index) in styleList"
@@ -147,10 +155,11 @@
 </template>
 
 <script>
-import {defineComponent, ref} from 'vue';
+import {defineComponent, onMounted, ref} from 'vue';
 import {featureTypeOptions , elementTypeOptions } from '/@/utils/baiduStyle.js';
 import { useMessage } from 'naive-ui';
 import { cloneDeep } from 'lodash';
+
 export default defineComponent({
   name: 'BaiduStyle',
   components: {
@@ -161,7 +170,8 @@ export default defineComponent({
 
   setup(prop, {emit}) {
     const styleList = ref([]);
-
+    const styleVisible = ref(false);
+    const textareaValue = ref('');
     const popover = ref();
     const message = useMessage();
     function convertArrayToObject(arr) {
@@ -193,8 +203,18 @@ export default defineComponent({
         hue: '',
         lightness: 1,
         saturation: 1,
-        weight: '',
+        weight: 0.1,
       },
+    });
+
+    onMounted(()=>{
+      const json = localStorage.getItem('styleJson');
+      try {
+        styleList.value = JSON.parse(json) ?? [];
+        emit('preview', styleList.value);
+      } catch (error) {
+        console.log(error);
+      }
     });
     return {
       featureTypeOptions,
@@ -205,6 +225,8 @@ export default defineComponent({
       formValue,
       styleList,
       downloadJSON,
+      styleVisible,
+      textareaValue,
       handleAddClick(){
         const index = styleList.value.findIndex(i=>i.elementType == formValue.value.elementType 
           && i.featureType == formValue.value.featureType );
@@ -216,24 +238,30 @@ export default defineComponent({
         }
         styleList.value.push(cloneDeep(formValue.value));
         emit('preview', styleList.value);
+        localStorage.setItem('styleJson', JSON.stringify(styleList.value));
+
       },
       handleDel(index){
         if (index > -1 && index < styleList.value.length) {
           styleList.value.splice(index, 1);
           emit('preview', styleList.value);
+          localStorage.setItem('styleJson', JSON.stringify(styleList.value));
         }
       },
+      loadStyle(){
+        if(textareaValue.value){
+          try {
+            styleList.value = JSON.parse(textareaValue.value);
+            emit('preview', styleList.value);
+          localStorage.setItem('styleJson', JSON.stringify(styleList.value));
+
+          } catch (error) {
+            message.error('JSON 格式错误');
+          }
+        }
+        styleVisible.value = false;
+      },
     };
-  },
-  data() {
-    return {
-    };
-  },
-  computed: {
-  },
-  mounted() {
-  },
-  methods: {
   },
 });
 </script>

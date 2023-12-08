@@ -122,38 +122,40 @@ export function downloadClipLoop (list, apiDownload, tileLayer, downloadGeometry
  * @returns Promise
  */
 
-let list = [];
+// let list = [];
 
-export function awaitDownLoad(){
-  const result = [];
-  return new Promise((resolve) => {
-    window.electron.imageDownloadDone(state => {
-      result.push(state);
-      console.log(result.length, list.length);
-      if(result.length >= list.length){
-        list = [];
-        resolve({
-          success: result.filter(i=>i.state=='completed').length,
-          error: result.filter(i=>i.state=='error').length,
-        });
-      }
-    });
+// export function awaitDownLoad(){
+//   const result = [];
+//   return new Promise((resolve) => {
+//     window.electron.imageDownloadDone(state => {
+//       result.push(state);
+//       console.log(result.length, list.length);
+//       if(result.length >= list.length){
+//         list = [];
+//         resolve({
+//           success: result.filter(i=>i.state=='completed').length,
+//           error: result.filter(i=>i.state=='error').length,
+//         });
+//       }
+//     });
 
-  });
-}
+//   });
+// }
 
 export async function downloadImage (tile, downloadOption) {
+  console.log(333333333);
   const { clipImage } = downloadOption;
   const downloadMethod = clipImage ? _downloadClipImage : _downloadImage;
-  if( list.length < 1000 ){
-    list.push(downloadMethod(tile, downloadOption));
-    return;
-  } else {
-    Promise.race(list);
-    const res =  await awaitDownLoad();
-    list.push(downloadMethod(tile, downloadOption));
-    return res;
-  }
+  return downloadMethod(tile, downloadOption);
+  // if( list.length < 1000 ){
+  //   list.push(downloadMethod(tile, downloadOption));
+  //   return;
+  // } else {
+  //   Promise.race(list);
+  //   const res =  await awaitDownLoad();
+  //   list.push(downloadMethod(tile, downloadOption));
+  //   return res;
+  // }
 }
 
 
@@ -173,7 +175,14 @@ function _downloadImage (tile, downloadOption) {
     const savePath = temppath + '/' + tile.y + downloadOption.pictureType;
     const param = {zoom: tile.z, url:tile.url, savePath, x:tile.x, y:tile.y, patch: downloadOption.patch};
     window.electron.ipcRenderer.send('save-image', param);
-    resolve(true);
+    window.electron.imageDownloadDone(state => {
+      if (state.state === 'completed') {
+        resolve(true);
+      } else {
+        resolve(false);
+      }
+    });
+    // resolve(true);
   });
 }
 

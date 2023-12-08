@@ -21,9 +21,9 @@
         class="error"
       />
     </div>
-    <button @click="closeProgress">
+    <!-- <button @click="closeProgress">
       关闭
-    </button>
+    </button> -->
   </div>
 </template>
 

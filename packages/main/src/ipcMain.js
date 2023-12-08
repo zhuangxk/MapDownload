@@ -6,6 +6,7 @@ const fs = require('fs');
 const sharp = require('sharp');
 const request = require('superagent');
 import { requestHandle } from './ipHandle';
+import { DownloadManager } from './download';
 
 ipcMain.handle('show-dialog', async () => {
   const result = await dialog.showOpenDialog({ properties: ['openFile', 'openDirectory'] });
@@ -13,13 +14,17 @@ ipcMain.handle('show-dialog', async () => {
 });
 // 确保目录存在，不存在则创建
 ipcMain.on('ensure-dir', (event, args) => {
-  fse.ensureDirSync(args);
+  args && fse.ensureDirSync(args);
 });
 
-let iii=0;
+// let iii=0;
 
 // 下载事件
 export function ipcHandle(win) {
+  const download = new DownloadManager(win);
+  ipcMain.on('download-clear', () => {
+    download.clear();
+  });
   // electron downloadURL方法
   // let currentConfig = null;
   // ipcMain.on('save-image', (event, item) => {
@@ -37,66 +42,14 @@ export function ipcHandle(win) {
   //     });
   //   });
   // });
-
-
+  
   // superagent & sharp 下载图片
   ipcMain.on('save-image', async (event, args) => {
-    iii++;
     try {
-    // sharp(base64Data).composite 反过来试试
-    const sharpStream = sharp({
-      failOnError: false,
-    });
-    if(args.patch){
-      const exists = await fse.pathExists(args.savePath); 
-      console.log('文件存在：' + args.savePath );
-      if(exists){
-        win.webContents.send('imageDownloadDone', {
-          state: 'completed',
-          file: args.savePath,
-        });
-       return;
-      }    
-    }
-    const promises = [];
-    if (args.imageBuffer) {
-      const base64Data = args.imageBuffer.replace(/^data:image\/\w+;base64,/, '');
-      const dataBuffer = Buffer.from(base64Data, 'base64');
-      promises.push(
-        sharpStream
-          .composite([{ input: dataBuffer, gravity: 'centre', blend: 'dest-in' }])
-          .toFile(args.savePath),
-      );
-    } else {
-      promises.push(
-        sharpStream
-          // .ensureAlpha()
-          .toFile(args.savePath),
-      );
-    }
-
-    // got.stream(args.url).pipe(sharpStream);
-    requestHandle(request.get(args.url)).pipe(sharpStream);
-    Promise.all(promises)
-      .then(() => {
-        console.log('下载完成:'+ iii + '__'+ args.savePath);
-        win.webContents.send('imageDownloadDone', {
-          state: 'completed',
-          file: args.savePath,
-        });
-      })
-      .catch(() => {
-        // console.error('Error processing files, let\'s clean it up', err);
-        try {
-          fs.unlinkSync(args.savePath);
-        } catch (e) {
-          console.error(e);
-         
-        }
-        win.webContents.send('imageDownloadDone', {
-          state: 'error',
-          file: args.savePath,
-        });
+      await download.addTask(args);
+      win.webContents.send('imageDownloadDone', {
+        state: 'completed',
+        file: args.savePath,
       });
     } catch (error) {
       win.webContents.send('imageDownloadDone', {

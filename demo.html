@@ -20,17 +20,7 @@
 
     <div id="container"></div> 
     <script>
-            var json = [{
-                "featureType": "water",
-                "elementType": "geometry",
-                "stylers": {
-                    "hue": "#05296B",
-                    "color": "#05296B",
-                    visibility: 'on',
-                    lightness: -10,
-                    saturation: 300,
-                }
-            }];
+            var json = [{"featureType":"arterial","elementType":"labels","stylers":{"visibility":"off"}},{"featureType":"education","elementType":"labels","stylers":{"visibility":"off"}}];
         // var map = new BMap.Map("container");
         //     var point = new BMap.Point(116.404, 39.915);
         //     map.centerAndZoom(point, 8);  
@@ -40,7 +30,7 @@
         //     });
         var map = new BMap.Map("container");
         var point = new BMap.Point(120.404, 36.7);
-        map.centerAndZoom(point, 8); 
+        map.centerAndZoom(point, 10); 
 
 
         // fetch('./custom_map_config.json')

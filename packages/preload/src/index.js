@@ -3,8 +3,12 @@ const { ipcRenderer } = require('electron');
 
 const apiKey = 'electron';
 let imageDownloadhandle;
+let downloadProgressHandle;
 ipcRenderer.on('imageDownloadDone', (event, state) => {
   imageDownloadhandle && imageDownloadhandle(state);
+});
+ipcRenderer.on('download-progress', (event, state) => {
+  downloadProgressHandle && downloadProgressHandle(state);
 });
 /**
  * @see https://github.com/electron/electron/issues/21437#issuecomment-573522360
@@ -14,6 +18,9 @@ const api = {
   ipcRenderer: { ...ipcRenderer },
   imageDownloadDone: (callback) => {
     imageDownloadhandle = callback;
+  },
+  downloadProgress: (callback) => {
+    downloadProgressHandle = callback;
   },
 };
 
