@@ -117,7 +117,7 @@
           <span
             class="btn"
             title="样式配置"
-            @click="styleVisible = true"
+            @click="showInput"
           >
             加载配置
           </span>
@@ -227,6 +227,9 @@ export default defineComponent({
       downloadJSON,
       styleVisible,
       textareaValue,
+      showInput(){
+        this.styleVisible = true;
+      },
       handleAddClick(){
         const index = styleList.value.findIndex(i=>i.elementType == formValue.value.elementType 
           && i.featureType == formValue.value.featureType );
