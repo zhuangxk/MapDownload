@@ -157,6 +157,7 @@ export default defineComponent({
       this.isBaiduCustom = data.layer.value == 'custom';
       this._currentLayer = data;
       map.switchBaseLayer(data);
+
     },
     handlePreview(style){
       map.setBaiduStyle(style);

@@ -1,6 +1,7 @@
 // 地图列表
 import {uuid} from './random';
 const BaiduConstomSubdomains = [0, 1, 2]; // 百度自定义瓦片子域名
+
 const mapList = [
   {
     label: '高德',
@@ -12,6 +13,15 @@ const mapList = [
         prejection: 'EPSG:3857',
         exteral: {
           attribution: '高德-电子地图',
+        },
+      },
+      {
+        label: 'DEMO',
+        value: 'Demo',
+        prejection: 'EPSG:3857',
+        exteral: {
+          subdomains: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+          attribution: '高德-4326',
         },
       },
       {

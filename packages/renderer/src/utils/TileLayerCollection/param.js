@@ -54,6 +54,9 @@ export default function getParams() {
 
     },
     Amap: {
+      Demo: {
+        url: 'http://online{s}.map.bdimg.com/onlinelabel/?qt=tile&x={x}&y={y}&z={z}&styles=pl&scaler=1&p=1',
+      },
       Normal: {
         url: 'http://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
       },

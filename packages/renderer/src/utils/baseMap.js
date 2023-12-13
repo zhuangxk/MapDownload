@@ -20,6 +20,10 @@ const defaultTileOption = {
   crossOrigin: null, // 瓦片跨域
   repeatWorld: false,
 };
+
+import { CRSTransform } from './chncrs';
+
+
 export default class baseMap{
   constructor(id) {
     this.createMap(id);
@@ -58,6 +62,13 @@ export default class baseMap{
       // subdomains: param.layer.subdomains,
       // attribution: param.layer.attribution,
       ...param.layer.exteral,
+      offset: function (z) {
+        //实时计算wgs84和gcj02瓦片的偏移量
+        const center = this.map.getCenter();
+        const c = CRSTransform.transform(center.toArray(), 'GCJ02', 'WGS84');
+        const offset = this.map.coordToPoint(center, z).sub(this.map.coordToPoint(new maptalks.Coordinate(c), z));
+        return offset._round().toArray();
+      },
     });
     const oldBaseLayer = this.map.getBaseLayer();
     if (oldBaseLayer && oldBaseLayer.config()?.debug) {
@@ -68,6 +79,11 @@ export default class baseMap{
     this.map.setSpatialReference({
       projection : param.layer.prejection,
     });
+
+    const layer = new maptalks.VectorLayer('ddddd').addTo(this.map);
+    new maptalks.Marker([120.314561, 36.073916]).addTo(layer);
+    new maptalks.Marker([120.35070197, 36.0750615]).addTo(layer);
+
 
     // testDraw(this.map.getBaseLayer(), {x:24,y:12,z:5}); // 测试-绘制瓦片外框
   }
